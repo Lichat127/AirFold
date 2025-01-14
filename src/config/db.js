@@ -16,6 +16,9 @@ async function initializeDatabase() {
         const schema = fs.readFileSync("scripts/db.sql", "utf8");
         await connection.query(schema);
         console.log("Base de données initialisée avec succès !");
+        
+        const seedData = fs.readFileSync("scripts/seed_data.sql", "utf-8");
+        await connection.query(seedData);
         await connection.end();
     } catch (error) {
         console.error("Erreur lors de l'initialisation de la base :", error);
