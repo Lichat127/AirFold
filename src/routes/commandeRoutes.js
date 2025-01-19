@@ -6,8 +6,15 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
     try {
-        const commandes = await commandeController.getAllCommandes();
-        res.json(commandes);
+        const { start, end } = req.query;
+
+        if (start && end) {
+            const commandes = await commandeController.getCommandesByDateRange(start, end);
+            res.json(commandes);
+        } else {
+            const commandes = await commandeController.getAllCommandes();
+            res.json(commandes);
+        }
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

@@ -1,5 +1,5 @@
 const { getConnection } = require("../config/db");
-const { validateCommande, validateCommandeId, validateClientId } = require("../models/commandeModel");
+const { validateCommande, validateCommandeId, validateClientId, validateDateRange } = require("../models/commandeModel");
 
 async function getAllCommandes() {
     let connection;
@@ -105,6 +105,24 @@ async function getCommandesByClientId(clientId) {
     }
 }
 
+async function getCommandesByDateRange(startDate, endDate) {
+    const { start, end } = validateDateRange({ start: startDate, end: endDate})
+
+    let connection;
+    try {
+        connection = await getConnection();
+        const [rows] = await connection.query(
+            'SELECT * FROM Commande WHERE date_commande BETWEEN ? AND ?', 
+            [start, end]
+        );
+        return rows;
+    } catch (error) {
+        throw new Error(`Erreur lors de la récupération des commandes par plage de dates: ${error.message}`);
+    } finally {
+        if (connection) await connection.end();
+    }
+}
+
 module.exports = {
     getAllCommandes,
     getCommandeById,
@@ -112,4 +130,5 @@ module.exports = {
     updateCommande,
     deleteCommande,
     getCommandesByClientId,
+    getCommandesByDateRange,
 };

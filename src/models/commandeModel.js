@@ -24,6 +24,32 @@ const commandeSchema = Joi.object({
         })
 });
 
+const dateRangeSchema = Joi.object({
+    start: Joi.date()
+        .iso()
+        .max('now')
+        .required()
+        .messages({
+            'date.base': 'La date de début doit être une date valide',
+            'date.format': 'La date de début doit être au format ISO',
+            'date.max': 'La date de début ne peut pas être dans le futur',
+            'any.required': 'La date de début est obligatoire'
+        }),
+    
+    end: Joi.date()
+        .iso()
+        .min(Joi.ref('start'))
+        .max('now')
+        .required()
+        .messages({
+            'date.base': 'La date de fin doit être une date valide',
+            'date.format': 'La date de fin doit être au format ISO',
+            'date.min': 'La date de fin doit être postérieure ou égale à la date de début',
+            'date.max': 'La date de fin ne peut pas être dans le futur',
+            'any.required': 'La date de fin est obligatoire'
+        })
+});
+
 const validateCommande = (data) => {
     const { error, value } = commandeSchema.validate(data, { abortEarly: false });
     
@@ -59,8 +85,20 @@ const validateClientId = (clientId) => {
     return clientId;
 };
 
+const validateDateRange = (data) => {
+    const { error, value } = dateRangeSchema.validate(data, { abortEarly: false });
+    
+    if (error) {
+        const errorMessages = error.details.map(detail => detail.message);
+        throw new Error(errorMessages.join(', '));
+    }
+    
+    return value;
+};
+
 module.exports = {
     validateCommande,
     validateCommandeId,
-    validateClientId
+    validateClientId,
+    validateDateRange,
 };
