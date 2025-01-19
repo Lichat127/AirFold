@@ -19,7 +19,7 @@ async function getFournisseurById(id) {
             throw new Error("Fournisseur introuvable.");
         }
         await connection.end();
-        return rows[0];
+        return rows;
     } catch (error) {
         throw new Error("Erreur lors de la récupération du fournisseur.");
     }
