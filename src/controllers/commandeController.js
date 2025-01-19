@@ -67,10 +67,24 @@ async function deleteCommande(id) {
     }
 }
 
+async function getCommandesByClientId(clientId) {
+    try {
+        const connection = await getConnection();
+        const [rows] = await connection.query(`SELECT * FROM Commande WHERE id_client = ${clientId}`);
+        await connection.end();
+        return rows;
+    } catch (error) {
+        throw new Error("Erreur lors de la récupération des commandes du client.");
+    }
+}
+
+
+
 module.exports = {
     getAllCommandes,
     getCommandeById,
     createCommande,
     updateCommande,
     deleteCommande,
+    getCommandesByClientId,
 };
