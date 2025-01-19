@@ -8,7 +8,7 @@ async function getAllProducts() {
         const [rows] = await connection.query('SELECT * FROM Produit');
         return rows;
     } catch (error) {
-        throw new Error("Erreur lors de la récupération des produits.");
+        throw new Error(`Erreur lors de la récupération des produits: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -31,7 +31,7 @@ async function getProductById(id) {
         
         return rows[0];
     } catch (error) {
-        throw new Error("Erreur lors de la récupération du produit.");
+        throw new Error(`Erreur lors de la récupération du produit: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -61,7 +61,7 @@ async function createProduct(productData) {
 
         return result.insertId;
     } catch (error) {
-        throw new Error("Erreur lors de la création du produit.");
+        throw new Error(`Erreur lors de la création du produit: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -96,7 +96,7 @@ async function updateProduct(id, productData) {
             );
         }
     } catch (error) {
-         throw new Error("Erreur lors de la mise à jour du produit.");
+         throw new Error(`Erreur lors de la mise à jour du produit: ${error.message}`);
      } finally {
          if (connection) await connection.end();
      }
@@ -117,7 +117,7 @@ async function deleteProduct(id) {
             throw new Error("Produit introuvable.");
         }
     } catch (error) {
-        throw new Error("Erreur lors de la suppression du produit.");
+        throw new Error(`Erreur lors de la suppression du produit: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -132,7 +132,7 @@ async function getProductsByCategoryIds(categoryIds) {
         const [rows] = await connection.query(`SELECT * FROM Produit WHERE id_categorie IN (${placeholders})`, categoryIds);
         return rows;
     } catch (error) {
-        throw new Error("Erreur lors de la récupération des produits des catégories.");
+        throw new Error(`Erreur lors de la récupération des produits des catégories: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }

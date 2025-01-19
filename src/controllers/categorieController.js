@@ -8,7 +8,7 @@ async function getAllCategories() {
         const [rows] = await connection.query('SELECT * FROM Categorie');
         return rows;
     } catch (error) {
-        throw new Error("Erreur lors de la récupération des catégories.");
+        throw new Error(`Erreur lors de la récupération des catégories: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -26,7 +26,7 @@ async function getCategoryById(id) {
         }
         return rows[0];
     } catch (error) {
-        throw new Error("Erreur lors de la récupération de la catégorie.");
+        throw new Error(`Erreur lors de la récupération de la catégorie: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -45,7 +45,7 @@ async function createCategory(categoryData) {
         );
         return result.insertId;
     } catch (error) {
-        throw new Error("Erreur lors de la création de la catégorie.");
+        throw new Error(`Erreur lors de la création de la catégorie: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -67,7 +67,7 @@ async function updateCategory(id, categoryData) {
             throw new Error("Catégorie introuvable.");
         }
     } catch (error) {
-        throw new Error("Erreur lors de la mise à jour de la catégorie.");
+        throw new Error(`Erreur lors de la mise à jour de la catégorie: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -84,7 +84,7 @@ async function deleteCategory(id) {
             throw new Error("Catégorie introuvable.");
         }
     } catch (error) {
-        throw new Error("Erreur lors de la suppression de la catégorie.");
+        throw new Error(`Erreur lors de la suppression de la catégorie: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }

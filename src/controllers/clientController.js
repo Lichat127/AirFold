@@ -8,7 +8,7 @@ async function getAllClients() {
         const [rows] = await connection.query('SELECT * FROM Client');
         return rows;
     } catch (error) {
-        throw new Error("Erreur lors de la récupération des clients.");
+        throw new Error(`Erreur lors de la récupération des clients : ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -26,7 +26,7 @@ async function getClientById(id) {
         }
         return rows[0];
     } catch (error) {
-        throw new Error("Erreur lors de la récupération du client.");
+        throw new Error(`Erreur lors de la récupération du client: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -45,7 +45,7 @@ async function createClient(clientData) {
         );
         return result.insertId;
     } catch (error) {
-        throw new Error("Erreur lors de la création du client.");
+        throw new Error(`Erreur lors de la création du client: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -67,7 +67,7 @@ async function updateClient(id, clientData) {
             throw new Error("Client introuvable.");
         }
     } catch (error) {
-        throw new Error("Erreur lors de la mise à jour du client.");
+        throw new Error(`Erreur lors de la mise à jour du client: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -84,7 +84,7 @@ async function deleteClient(id) {
             throw new Error("Client introuvable.");
         }
     } catch (error) {
-        throw new Error("Erreur lors de la suppression du client.");
+        throw new Error(`Erreur lors de la suppression du client: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }

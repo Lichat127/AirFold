@@ -99,13 +99,47 @@ async function checkOrderExists(id_commande) {
     }
 }
 
-async function checkProductExists(id_produit) {
+async function checkProductAvailability(productId, requestedQuantity) {
+    let connection;
+    
+    try {
+        connection = await getConnection();
+
+        const [productRows] = await connection.query(
+            'SELECT id, quantite_stock FROM Produit WHERE id = ?', 
+            [productId]
+        );
+
+        if (productRows.length === 0) {
+            throw new Error(`Produit avec l'ID ${productId} n'existe pas`);
+        }
+
+        const availableStock = productRows[0].quantite_stock;
+
+        if (requestedQuantity > availableStock) {
+            throw new Error(`Stock insuffisant. Quantité disponible : ${availableStock}`);
+        }
+
+        return true; 
+    } catch (error) {
+        throw error;
+    } finally {
+        if (connection) await connection.end();
+    }
+}
+
+async function updateProductStock(productId, quantity) {
     let connection;
     try {
         connection = await getConnection();
-        const [rows] = await connection.query('SELECT id FROM Produit WHERE id = ?', [id_produit]);
-        if (rows.length === 0) {
-            throw new Error(`Produit avec l'ID ${id_produit} n'existe pas`);
+        
+        const [result] = await connection.query(
+            'UPDATE Produit SET quantite_stock = quantite_stock - ? WHERE id = ?', 
+            [quantity, productId]
+        );
+
+        if (result.affectedRows === 0) {
+            throw new Error(`Impossible de mettre à jour le stock du produit ${productId}`);
         }
     } catch (error) {
         throw error;
@@ -119,5 +153,6 @@ module.exports = {
     validateLigneCommandeId,
     validateCommandeId,
     checkOrderExists,
-    checkProductExists,
+    checkProductAvailability,
+    updateProductStock,
 };

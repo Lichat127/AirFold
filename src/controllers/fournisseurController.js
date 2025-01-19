@@ -8,7 +8,7 @@ async function getAllFournisseurs() {
         const [rows] = await connection.query('SELECT * FROM Fournisseur');
         return rows;
     } catch (error) {
-        throw new Error("Erreur lors de la récupération des fournisseurs.");
+        throw new Error(`Erreur lors de la récupération des fournisseurs: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -31,7 +31,7 @@ async function getFournisseurById(id) {
          
         return rows[0];
     } catch (error) {
-        throw new Error("Erreur lors de la récupération du fournisseur.");
+        throw new Error(`Erreur lors de la récupération du fournisseur: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -61,7 +61,7 @@ async function createFournisseur(fournisseurData) {
 
         return result.insertId;
     } catch (error) {
-        throw new Error("Erreur lors de la création du fournisseur.");
+        throw new Error(`Erreur lors de la création du fournisseur: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -96,7 +96,7 @@ async function updateFournisseur(id, fournisseurData) {
             );
         }
     } catch (error) {
-        throw new Error("Erreur lors de la mise à jour du fournisseur.");
+        throw new Error(`Erreur lors de la mise à jour du fournisseur: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
@@ -116,7 +116,7 @@ async function deleteFournisseur(id) {
             throw new Error("Fournisseur introuvable.");
         }
     } catch (error) {
-        throw new Error("Erreur lors de la suppression du fournisseur.");
+        throw new Error(`Erreur lors de la suppression du fournisseur: ${error.message}`);
     } finally {
         if (connection) await connection.end();
     }
