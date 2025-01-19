@@ -25,4 +25,17 @@ async function initializeDatabase() {
     }
 }
 
-module.exports = { initializeDatabase };
+async function getConnection() {
+    try {
+        const connection = await mysql.createConnection({
+            ...dbConfig,
+            database: process.env.DB_NAME,
+        });
+        return connection;
+    } catch (error) {
+        console.error("Erreur lors de la connexion à la base de donnée :", error);
+        throw error;
+    }
+}
+
+module.exports = { initializeDatabase, getConnection };
