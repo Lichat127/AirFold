@@ -1,103 +1,140 @@
 const { getConnection } = require("../config/db");
+const { validateProduit, validateProduitId, checkSupplierExists } = require("../models/produitModel");
 
 async function getAllProducts() {
+    let connection;
     try {
-        const connection = await getConnection();
-        const [rows] = await connection.query(`SELECT * FROM Produit`);
-        await connection.end();
+        connection = await getConnection();
+        const [rows] = await connection.query('SELECT * FROM Produit');
         return rows;
     } catch (error) {
-        throw new Error("Erreur lors de la récupération des produits.");
+        throw new Error(`Erreur lors de la récupération des produits: ${error.message}`);
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function getProductById(id) {
+    validateProduitId(id);
+    
+    let connection;
     try {
-        const connection = await getConnection();
-        const [rows] = await connection.query(`SELECT * FROM Produit WHERE id = ${id}`);
+        connection = await getConnection();
+        const [rows] = await connection.query('SELECT * FROM Produit WHERE id = ?', [id]);
+        
         if (rows.length === 0) {
             throw new Error("Produit introuvable.");
         }
         
-        const [fournisseurs] = await connection.query(`SELECT id_fournisseur FROM Produit_Fournisseur WHERE id_produit = ${id}`);
-        rows.fournisseurs = fournisseurs.map(f => f.id_fournisseur);
+        const [fournisseurs] = await connection.query('SELECT id_fournisseur FROM Produit_Fournisseur WHERE id_produit = ?', [id]);
+        rows[0].fournisseurs = fournisseurs.map(f => f.id_fournisseur);
         
-        await connection.end();
-        return rows;
+        return rows[0];
     } catch (error) {
-        throw new Error("Erreur lors de la récupération du produit.");
+        throw new Error(`Erreur lors de la récupération du produit: ${error.message}`);
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function createProduct(productData) {
-    const { reference, nom, description, prix_unitaire, quantite_stock, id_categorie, fournisseurs } = productData;
+    const validatedData = validateProduit(productData);
+    const { reference, nom, description, prix_unitaire, quantite_stock, id_categorie, fournisseurs } = validatedData;
+    
+    await checkSupplierExists(fournisseurs);
+
+    let connection;
     try {
-        const connection = await getConnection();
-        const query = `INSERT INTO Produit (reference, nom, description, prix_unitaire, quantite_stock, id_categorie) VALUES ('${reference}', '${nom}', '${description}', ${prix_unitaire}, ${quantite_stock}, ${id_categorie})`;
-        const [result] = await connection.query(query);
+        connection = await getConnection();
+        
+        const [result] = await connection.query(
+            'INSERT INTO Produit (reference, nom, description, prix_unitaire, quantite_stock, id_categorie) VALUES (?, ?, ?, ?, ?, ?)',
+            [reference, nom, description, prix_unitaire, quantite_stock, id_categorie]
+        );
         
         for (const id_fournisseur of fournisseurs) {
-            await connection.query(`INSERT INTO Produit_Fournisseur (id_produit, id_fournisseur) VALUES (${result.insertId}, ${id_fournisseur})`);
+            await connection.query(
+                'INSERT INTO Produit_Fournisseur (id_produit, id_fournisseur) VALUES (?, ?)',
+                [result.insertId, id_fournisseur]
+            );
         }
 
-        await connection.end();
         return result.insertId;
     } catch (error) {
-        throw new Error("Erreur lors de la création du produit.");
+        throw new Error(`Erreur lors de la création du produit: ${error.message}`);
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function updateProduct(id, productData) {
-    const { reference, nom, description, prix_unitaire, quantite_stock, id_categorie, fournisseurs } = productData;
+    validateProduitId(id);
+    const validatedData = validateProduit(productData);
+    const { reference, nom, description, prix_unitaire, quantite_stock, id_categorie, fournisseurs } = validatedData;
+
+    await checkSupplierExists(fournisseurs);
+
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
         
-        const query = `UPDATE Produit SET reference = '${reference}', nom = '${nom}', description = '${description}', prix_unitaire = ${prix_unitaire}, quantite_stock = ${quantite_stock}, id_categorie = ${id_categorie} WHERE id = ${id}`;
-        const [result] = await connection.query(query);
+        const [result] = await connection.query(
+            'UPDATE Produit SET reference = ?, nom = ?, description = ?, prix_unitaire = ?, quantite_stock = ?, id_categorie = ? WHERE id = ?',
+            [reference, nom, description, prix_unitaire, quantite_stock, id_categorie, id]
+        );
         
         if (result.affectedRows === 0) {
             throw new Error("Produit introuvable.");
         }
 
-        await connection.query(`DELETE FROM Produit_Fournisseur WHERE id_produit = ${id}`);
+        await connection.query('DELETE FROM Produit_Fournisseur WHERE id_produit = ?', [id]);
+        
         for (const id_fournisseur of fournisseurs) {
-            await connection.query(`INSERT INTO Produit_Fournisseur (id_produit, id_fournisseur) VALUES (${id}, ${id_fournisseur})`);
+            await connection.query(
+                'INSERT INTO Produit_Fournisseur (id_produit, id_fournisseur) VALUES (?, ?)',
+                [id, id_fournisseur]
+            );
         }
-
-        await connection.end();
     } catch (error) {
-        throw new Error("Erreur lors de la mise à jour du produit.");
-    }
+         throw new Error(`Erreur lors de la mise à jour du produit: ${error.message}`);
+     } finally {
+         if (connection) await connection.end();
+     }
 }
 
 async function deleteProduct(id) {
+    validateProduitId(id);
+    
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
         
-        await connection.query(`DELETE FROM Produit_Fournisseur WHERE id_produit = ${id}`);
+        await connection.query('DELETE FROM Produit_Fournisseur WHERE id_produit = ?', [id]);
         
-        const query = `DELETE FROM Produit WHERE id = ${id}`;
-        const [result] = await connection.query(query);
+        const [result] = await connection.query('DELETE FROM Produit WHERE id = ?', [id]);
         
         if (result.affectedRows === 0) {
             throw new Error("Produit introuvable.");
         }
-        
-        await connection.end();
     } catch (error) {
-        throw new Error("Erreur lors de la suppression du produit.");
+        throw new Error(`Erreur lors de la suppression du produit: ${error.message}`);
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
+
 async function getProductsByCategoryIds(categoryIds) {
+    let connection;
     try {
-        const connection = await getConnection();
-        const ids = categoryIds.join(",");
-        const [rows] = await connection.query(`SELECT * FROM Produit WHERE id_categorie IN (${ids})`);
-        await connection.end();
+        connection = await getConnection();
+        const placeholders = categoryIds.map(() => '?').join(',');
+        const [rows] = await connection.query(`SELECT * FROM Produit WHERE id_categorie IN (${placeholders})`, categoryIds);
         return rows;
     } catch (error) {
-        throw new Error("Erreur lors de la récupération des produits des catégories.");
+        throw new Error(`Erreur lors de la récupération des produits des catégories: ${error.message}`);
+    } finally {
+        if (connection) await connection.end();
     }
 }
 

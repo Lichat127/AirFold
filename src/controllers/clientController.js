@@ -1,69 +1,92 @@
 const { getConnection } = require("../config/db");
+const { validateClient, validateClientId } = require("../models/clientModel");
 
 async function getAllClients() {
+    let connection;
     try {
-        const connection = await getConnection();
-        const [rows] = await connection.query(`SELECT * FROM Client`);
-        await connection.end();
+        connection = await getConnection();
+        const [rows] = await connection.query('SELECT * FROM Client');
         return rows;
     } catch (error) {
-        throw new Error("Erreur lors de la récupération des clients.");
+        throw new Error(`Erreur lors de la récupération des clients : ${error.message}`);
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function getClientById(id) {
+    validateClientId(id);
+
+    let connection;
     try {
-        const connection = await getConnection();
-        const [rows] = await connection.query(`SELECT * FROM Client WHERE id = ${id}`);
+        connection = await getConnection();
+        const [rows] = await connection.query('SELECT * FROM Client WHERE id = ?', [id]);
         if (rows.length === 0) {
             throw new Error("Client introuvable.");
         }
-        await connection.end();
-        return rows;
+        return rows[0];
     } catch (error) {
-        throw new Error("Erreur lors de la récupération du client.");
+        throw new Error(`Erreur lors de la récupération du client: ${error.message}`);
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function createClient(clientData) {
-    const { nom, prenom, adresse, email, telephone } = clientData;
+    const validatedData = validateClient(clientData);
+    const { nom, prenom, adresse, email, telephone } = validatedData;
+
+    let connection;
     try {
-        const connection = await getConnection();
-        const query = `INSERT INTO Client (nom, prenom, adresse, email, telephone) VALUES ('${nom}', '${prenom}', '${adresse}', '${email}', '${telephone}')`;
-        const [result] = await connection.query(query);
-        await connection.end();
+        connection = await getConnection();
+        const [result] = await connection.query(
+            'INSERT INTO Client (nom, prenom, adresse, email, telephone) VALUES (?, ?, ?, ?, ?)',
+            [nom, prenom, adresse, email, telephone]
+        );
         return result.insertId;
     } catch (error) {
-        throw new Error("Erreur lors de la création du client.");
+        throw new Error(`Erreur lors de la création du client: ${error.message}`);
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function updateClient(id, clientData) {
-    const { nom, prenom, adresse, email, telephone } = clientData;
+    validateClientId(id);
+    const validatedData = validateClient(clientData);
+    const { nom, prenom, adresse, email, telephone } = validatedData;
+    
+    let connection;
     try {
-        const connection = await getConnection();
-        const query = `UPDATE Client SET nom = '${nom}', prenom = '${prenom}', adresse = '${adresse}', email = '${email}', telephone = '${telephone}' WHERE id = ${id}`;
-        const [result] = await connection.query(query);
+        connection = await getConnection();
+        const [result] = await connection.query(
+            'UPDATE Client SET nom = ?, prenom = ?, adresse = ?, email = ?, telephone = ? WHERE id = ?',
+            [nom, prenom, adresse, email, telephone, id]
+        );
         if (result.affectedRows === 0) {
             throw new Error("Client introuvable.");
         }
-        await connection.end();
     } catch (error) {
-        throw new Error("Erreur lors de la mise à jour du client.");
+        throw new Error(`Erreur lors de la mise à jour du client: ${error.message}`);
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function deleteClient(id) {
+    validateClientId(id);
+
+    let connection;
     try {
-        const connection = await getConnection();
-        const query = `DELETE FROM Client WHERE id = ${id}`;
-        const [result] = await connection.query(query);
+        connection = await getConnection();
+        const [result] = await connection.query('DELETE FROM Client WHERE id = ?', [id]);
         if (result.affectedRows === 0) {
             throw new Error("Client introuvable.");
         }
-        await connection.end();
     } catch (error) {
-        throw new Error("Erreur lors de la suppression du client.");
+        throw new Error(`Erreur lors de la suppression du client: ${error.message}`);
+    } finally {
+        if (connection) await connection.end();
     }
 }
 

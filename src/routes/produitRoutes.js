@@ -1,5 +1,6 @@
 const express = require("express");
 const produitController = require("../controllers/produitController");
+const commandeController = require("../controllers/commandeController");
 
 const router = express.Router();
 
@@ -54,6 +55,20 @@ router.delete("/:id", async (req, res) => {
       } catch (error) { 
           res.status(404).json({ error: error.message }); 
       } 
+});
+
+router.get("/:id/commandes", async (req, res) => {
+    try {
+        const produitId = req.params.id;
+        const commandes = await commandeController.getCommandesByProduitId(produitId);
+        res.json(commandes);
+    } catch (error) {
+        if (error.message.includes("Produit introuvable")) {
+            res.status(404).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: error.message });
+        }
+    }
 });
 
 module.exports = router;
