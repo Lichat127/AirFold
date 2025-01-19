@@ -5,7 +5,15 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
     try {
-        const produits = await produitController.getAllProducts();
+        const categoryIds = req.query.categories ? req.query.categories.split(",").map(Number) : [];
+        let produits;
+
+        if (categoryIds.length > 0) {
+            produits = await produitController.getProductsByCategoryIds(categoryIds);
+        } else {
+            produits = await produitController.getAllProducts();
+        }
+
         res.json(produits);
     } catch (error) {
         res.status(500).json({ error: error.message });

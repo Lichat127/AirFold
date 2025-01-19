@@ -89,10 +89,23 @@ async function deleteProduct(id) {
     }
 }
 
+async function getProductsByCategoryIds(categoryIds) {
+    try {
+        const connection = await getConnection();
+        const ids = categoryIds.join(",");
+        const [rows] = await connection.query(`SELECT * FROM Produit WHERE id_categorie IN (${ids})`);
+        await connection.end();
+        return rows;
+    } catch (error) {
+        throw new Error("Erreur lors de la récupération des produits des catégories.");
+    }
+}
+
 module.exports = {
     getAllProducts,
     getProductById,
     createProduct,
     updateProduct,
     deleteProduct,
+    getProductsByCategoryIds,
 };
