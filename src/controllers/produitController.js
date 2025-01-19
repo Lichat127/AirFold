@@ -1,19 +1,22 @@
 const { getConnection } = require("../config/db");
 
 async function getAllProducts() {
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
         const [rows] = await connection.query('SELECT * FROM Produit');
-        await connection.end();
         return rows;
     } catch (error) {
         throw new Error("Erreur lors de la récupération des produits.");
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function getProductById(id) {
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
         const [rows] = await connection.query('SELECT * FROM Produit WHERE id = ?', [id]);
         if (rows.length === 0) {
             throw new Error("Produit introuvable.");
@@ -22,17 +25,19 @@ async function getProductById(id) {
         const [fournisseurs] = await connection.query('SELECT id_fournisseur FROM Produit_Fournisseur WHERE id_produit = ?', [id]);
         rows[0].fournisseurs = fournisseurs.map(f => f.id_fournisseur);
         
-        await connection.end();
         return rows[0];
     } catch (error) {
         throw new Error("Erreur lors de la récupération du produit.");
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function createProduct(productData) {
     const { reference, nom, description, prix_unitaire, quantite_stock, id_categorie, fournisseurs } = productData;
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
         const [result] = await connection.query(
             'INSERT INTO Produit (reference, nom, description, prix_unitaire, quantite_stock, id_categorie) VALUES (?, ?, ?, ?, ?, ?)',
             [reference, nom, description, prix_unitaire, quantite_stock, id_categorie]
@@ -45,17 +50,19 @@ async function createProduct(productData) {
             );
         }
 
-        await connection.end();
         return result.insertId;
     } catch (error) {
         throw new Error("Erreur lors de la création du produit.");
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function updateProduct(id, productData) {
     const { reference, nom, description, prix_unitaire, quantite_stock, id_categorie, fournisseurs } = productData;
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
         
         const [result] = await connection.query(
             'UPDATE Produit SET reference = ?, nom = ?, description = ?, prix_unitaire = ?, quantite_stock = ?, id_categorie = ? WHERE id = ?',
@@ -73,16 +80,17 @@ async function updateProduct(id, productData) {
                 [id, id_fournisseur]
             );
         }
-
-        await connection.end();
     } catch (error) {
         throw new Error("Erreur lors de la mise à jour du produit.");
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function deleteProduct(id) {
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
         
         await connection.query('DELETE FROM Produit_Fournisseur WHERE id_produit = ?', [id]);
         
@@ -91,22 +99,24 @@ async function deleteProduct(id) {
         if (result.affectedRows === 0) {
             throw new Error("Produit introuvable.");
         }
-        
-        await connection.end();
     } catch (error) {
         throw new Error("Erreur lors de la suppression du produit.");
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function getProductsByCategoryIds(categoryIds) {
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
         const placeholders = categoryIds.map(() => '?').join(',');
         const [rows] = await connection.query(`SELECT * FROM Produit WHERE id_categorie IN (${placeholders})`, categoryIds);
-        await connection.end();
         return rows;
     } catch (error) {
         throw new Error("Erreur lors de la récupération des produits des catégories.");
+    } finally {
+        if (connection) await connection.end();
     }
 }
 

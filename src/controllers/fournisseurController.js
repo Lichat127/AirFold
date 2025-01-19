@@ -1,19 +1,22 @@
 const { getConnection } = require("../config/db");
 
 async function getAllFournisseurs() {
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
         const [rows] = await connection.query('SELECT * FROM Fournisseur');
-        await connection.end();
         return rows;
     } catch (error) {
         throw new Error("Erreur lors de la récupération des fournisseurs.");
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function getFournisseurById(id) {
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
         const [rows] = await connection.query('SELECT * FROM Fournisseur WHERE id = ?', [id]);
         
         if (rows.length === 0) {
@@ -23,17 +26,19 @@ async function getFournisseurById(id) {
         const [produits] = await connection.query('SELECT id_produit FROM Produit_Fournisseur WHERE id_fournisseur = ?', [id]);
         rows[0].produits = produits.map(p => p.id_produit);
          
-        await connection.end();
         return rows[0];
     } catch (error) {
         throw new Error("Erreur lors de la récupération du fournisseur.");
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function createFournisseur(fournisseurData) {
     const { nom, adresse, email, telephone, produits } = fournisseurData;
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
         const [result] = await connection.query(
             'INSERT INTO Fournisseur (nom, adresse, email, telephone) VALUES (?, ?, ?, ?)',
             [nom, adresse, email, telephone]
@@ -46,17 +51,19 @@ async function createFournisseur(fournisseurData) {
             );
         }
 
-        await connection.end();
         return result.insertId;
     } catch (error) {
         throw new Error("Erreur lors de la création du fournisseur.");
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function updateFournisseur(id, fournisseurData) {
     const { nom, adresse, email, telephone, produits } = fournisseurData;
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
 
         const [result] = await connection.query(
             'UPDATE Fournisseur SET nom=?, adresse=?, email=?, telephone=? WHERE id=?',
@@ -74,16 +81,17 @@ async function updateFournisseur(id, fournisseurData) {
                 [id_produit, id]
             );
         }
-
-        await connection.end();
     } catch (error) {
         throw new Error("Erreur lors de la mise à jour du fournisseur.");
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
 async function deleteFournisseur(id) {
+    let connection;
     try {
-        const connection = await getConnection();
+        connection = await getConnection();
 
         await connection.query('DELETE FROM Produit_Fournisseur WHERE id_fournisseur=?', [id]);
 
@@ -92,10 +100,10 @@ async function deleteFournisseur(id) {
         if (result.affectedRows === 0) {
             throw new Error("Fournisseur introuvable.");
         }
-
-        await connection.end();
     } catch (error) {
         throw new Error("Erreur lors de la suppression du fournisseur.");
+    } finally {
+        if (connection) await connection.end();
     }
 }
 
