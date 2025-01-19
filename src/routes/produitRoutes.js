@@ -35,17 +35,17 @@ router.put("/:id", async (req, res) => {
         await produitController.updateProduct(req.params.id, req.body);
         res.json({ message: "Produit mis à jour avec succès." });
     } catch (error) {
-        res.status(404).json({ error: error.message });
-    }
+          res.status(404).json({ error: error.message });
+      }
 });
 
 router.delete("/:id", async (req, res) => {
-    try {
-        await produitController.deleteProduct(req.params.id);
-        res.json({ message: "Produit supprimé avec succès." });
-    } catch (error) {
-        res.status(404).json({ error: error.message });
-    }
+      try { 
+          await produitController.deleteProduct(req.params.id); 
+          res.json({ message: "Produit supprimé avec succès." }); 
+      } catch (error) { 
+          res.status(404).json({ error: error.message }); 
+      } 
 });
 
 module.exports = router;
