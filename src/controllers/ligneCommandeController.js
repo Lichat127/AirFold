@@ -67,10 +67,23 @@ async function deleteLigneCommande(id) {
     }
 }
 
+async function getLignesByCommandeId(commandeId) {
+    try {
+        const connection = await getConnection();
+        const [rows] = await connection.query(`SELECT * FROM Ligne_commande WHERE id_commande = ${commandeId}`);
+        await connection.end();
+        return rows;
+    } catch (error) {
+        throw new Error("Erreur lors de la récupération des lignes de la commande.");
+    }
+}
+
+
 module.exports = {
     getAllLigneCommandes,
     getLigneCommandeById,
     createLigneCommande,
     updateLigneCommande,
     deleteLigneCommande,
+    getLignesByCommandeId,
 };

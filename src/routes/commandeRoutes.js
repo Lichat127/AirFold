@@ -1,5 +1,6 @@
 const express = require("express");
 const commandeController = require("../controllers/commandeController");
+const ligneCommandeController = require("../controllers/ligneCommandeController");
 
 const router = express.Router();
 
@@ -47,5 +48,16 @@ router.delete("/:id", async (req, res) => {
         res.status(404).json({ error: error.message });
     }
 });
+
+router.get("/:id/lignes", async (req, res) => {
+    try {
+        const commandeId = req.params.id;
+        const lignes = await ligneCommandeController.getLignesByCommandeId(commandeId);
+        res.json(lignes);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 module.exports = router;
