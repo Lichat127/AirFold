@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const { initializeDatabase } = require("./src/config/db");
 const produitRoutes = require("./src/routes/produitRoutes");
 const categorieRoutes = require("./src/routes/categorieRoutes");
+const fournisseurRoutes = require("./src/routes/fournisseurRoutes");
 
 const app = express();
 const PORT = 3000;
@@ -15,6 +16,7 @@ app.use(bodyParser.json());
 
         app.use("/produits", produitRoutes)
         app.use("/categories", categorieRoutes)
+        app.use("/fournisseurs", fournisseurRoutes)
     
         app.listen(PORT, () => {
             console.log(`Serveur lancé sur le port ${PORT}`);
