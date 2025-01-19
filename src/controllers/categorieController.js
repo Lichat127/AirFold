@@ -1,4 +1,5 @@
 const { getConnection } = require("../config/db");
+const { validateCategorie, validateCategorieId } = require("../models/categorieModel");
 
 async function getAllCategories() {
     let connection;
@@ -14,6 +15,8 @@ async function getAllCategories() {
 }
 
 async function getCategoryById(id) {
+    validateCategorieId(id);
+
     let connection;
     try {
         connection = await getConnection();
@@ -30,7 +33,9 @@ async function getCategoryById(id) {
 }
 
 async function createCategory(categoryData) {
-    const { nom, description } = categoryData;
+    const validatedData = validateCategorie(categoryData);
+    const { nom, description } = validatedData;
+
     let connection;
     try {
         connection = await getConnection();
@@ -47,7 +52,10 @@ async function createCategory(categoryData) {
 }
 
 async function updateCategory(id, categoryData) {
-    const { nom, description } = categoryData;
+    validateCategorieId(id);
+    const validatedData = validateCategorie(categoryData);
+    const { nom, description } = validatedData;
+    
     let connection;
     try {
         connection = await getConnection();
@@ -66,6 +74,8 @@ async function updateCategory(id, categoryData) {
 }
 
 async function deleteCategory(id) {
+    validateCategorieId(id);
+
     let connection;
     try {
         connection = await getConnection();

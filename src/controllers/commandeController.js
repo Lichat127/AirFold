@@ -1,4 +1,5 @@
 const { getConnection } = require("../config/db");
+const { validateCommande, validateCommandeId, validateClientId } = require("../models/commandeModel");
 
 async function getAllCommandes() {
     let connection;
@@ -14,6 +15,8 @@ async function getAllCommandes() {
 }
 
 async function getCommandeById(id) {
+    validateCommandeId(id);
+
     let connection;
     try {
         connection = await getConnection();
@@ -30,7 +33,9 @@ async function getCommandeById(id) {
 }
 
 async function createCommande(commandeData) {
-    const { id_client, date_commande } = commandeData;
+    const validatedData = validateCommande(commandeData);
+    const { id_client, date_commande } = validatedData;
+    
     let connection;
     try {
         connection = await getConnection();
@@ -47,7 +52,10 @@ async function createCommande(commandeData) {
 }
 
 async function updateCommande(id, commandeData) {
-    const { id_client, date_commande } = commandeData;
+    validateCommandeId(id);
+    const validatedData = validateCommande(commandeData);
+    const { id_client, date_commande } = validatedData;
+    
     let connection;
     try {
         connection = await getConnection();
@@ -66,6 +74,8 @@ async function updateCommande(id, commandeData) {
 }
 
 async function deleteCommande(id) {
+    validateCommandeId(id);
+
     let connection;
     try {
         connection = await getConnection();
@@ -81,6 +91,8 @@ async function deleteCommande(id) {
 }
 
 async function getCommandesByClientId(clientId) {
+    validateClientId(clientId);
+
     let connection;
     try {
         connection = await getConnection();

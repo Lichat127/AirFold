@@ -1,4 +1,5 @@
 const { getConnection } = require("../config/db");
+const { validateClient, validateClientId } = require("../models/clientModel");
 
 async function getAllClients() {
     let connection;
@@ -14,6 +15,8 @@ async function getAllClients() {
 }
 
 async function getClientById(id) {
+    validateClientId(id);
+
     let connection;
     try {
         connection = await getConnection();
@@ -30,7 +33,9 @@ async function getClientById(id) {
 }
 
 async function createClient(clientData) {
-    const { nom, prenom, adresse, email, telephone } = clientData;
+    const validatedData = validateClient(clientData);
+    const { nom, prenom, adresse, email, telephone } = validatedData;
+
     let connection;
     try {
         connection = await getConnection();
@@ -47,7 +52,10 @@ async function createClient(clientData) {
 }
 
 async function updateClient(id, clientData) {
-    const { nom, prenom, adresse, email, telephone } = clientData;
+    validateClientId(id);
+    const validatedData = validateClient(clientData);
+    const { nom, prenom, adresse, email, telephone } = validatedData;
+    
     let connection;
     try {
         connection = await getConnection();
@@ -66,6 +74,8 @@ async function updateClient(id, clientData) {
 }
 
 async function deleteClient(id) {
+    validateClientId(id);
+
     let connection;
     try {
         connection = await getConnection();

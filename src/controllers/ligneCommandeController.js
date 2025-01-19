@@ -1,4 +1,5 @@
 const { getConnection } = require("../config/db");
+const { validateLigneCommande, validateLigneCommandeId, validateCommandeId, checkOrderExists, checkProductExists } = require("../models/ligneCommandeModel");
 
 async function getAllLigneCommandes() {
     let connection;
@@ -14,6 +15,8 @@ async function getAllLigneCommandes() {
 }
 
 async function getLigneCommandeById(id) {
+    validateLigneCommandeId(id);
+
     let connection;
     try {
         connection = await getConnection();
@@ -30,7 +33,12 @@ async function getLigneCommandeById(id) {
 }
 
 async function createLigneCommande(ligneCommandeData) {
-    const { id_commande, id_produit, quantite, prix_unitaire_applique } = ligneCommandeData;
+    const validatedData = validateLigneCommande(ligneCommandeData);
+    const { id_commande, id_produit, quantite, prix_unitaire_applique } = validatedData;
+    
+    await checkOrderExists(id_commande);
+    await checkProductExists(id_produit);
+
     let connection;
     try {
         connection = await getConnection();
@@ -47,7 +55,13 @@ async function createLigneCommande(ligneCommandeData) {
 }
 
 async function updateLigneCommande(id, ligneCommandeData) {
-    const { id_commande, id_produit, quantite, prix_unitaire_applique } = ligneCommandeData;
+    validateLigneCommandeId(id);
+    const validatedData = validateLigneCommande(ligneCommandeData);
+    const { id_commande, id_produit, quantite, prix_unitaire_applique } = validatedData;
+    
+    await checkOrderExists(id_commande);
+    await checkProductExists(id_produit);
+
     let connection;
     try {
         connection = await getConnection();
@@ -66,6 +80,8 @@ async function updateLigneCommande(id, ligneCommandeData) {
 }
 
 async function deleteLigneCommande(id) {
+    validateLigneCommandeId(id);
+    
     let connection;
     try {
         connection = await getConnection();
@@ -81,6 +97,8 @@ async function deleteLigneCommande(id) {
 }
 
 async function getLignesByCommandeId(commandeId) {
+    validateCommandeId(commandeId);
+    
     let connection;
     try {
         connection = await getConnection();

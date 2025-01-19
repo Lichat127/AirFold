@@ -26,7 +26,7 @@ router.post("/", async (req, res) => {
         const newCategoryId = await categorieController.createCategory(req.body);
         res.status(201).json({ id: newCategoryId, message: "Catégorie créée avec succès." });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
 });
 
@@ -35,7 +35,7 @@ router.put("/:id", async (req, res) => {
         await categorieController.updateCategory(req.params.id, req.body);
         res.json({ message: "Catégorie mise à jour avec succès." });
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
 });
 

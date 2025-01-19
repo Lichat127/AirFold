@@ -1,4 +1,5 @@
 const { getConnection } = require("../config/db");
+const { validateFournisseur, validateFournisseurId, validateProduitId, checkProductsExists } = require("../models/fournisseurModel");
 
 async function getAllFournisseurs() {
     let connection;
@@ -14,6 +15,8 @@ async function getAllFournisseurs() {
 }
 
 async function getFournisseurById(id) {
+    validateFournisseurId(id);
+
     let connection;
     try {
         connection = await getConnection();
@@ -35,7 +38,11 @@ async function getFournisseurById(id) {
 }
 
 async function createFournisseur(fournisseurData) {
-    const { nom, adresse, email, telephone, produits } = fournisseurData;
+    const validatedData = validateFournisseur(fournisseurData);
+    const { nom, adresse, email, telephone, produits } = validatedData;
+    
+    await checkProductsExists(produits);
+
     let connection;
     try {
         connection = await getConnection();
@@ -45,6 +52,7 @@ async function createFournisseur(fournisseurData) {
         );
        
         for (const id_produit of produits) {
+            validateProduitId(id_produit);
             await connection.query(
                 'INSERT INTO Produit_Fournisseur (id_produit, id_fournisseur) VALUES (?, ?)',
                 [id_produit, result.insertId]
@@ -60,7 +68,12 @@ async function createFournisseur(fournisseurData) {
 }
 
 async function updateFournisseur(id, fournisseurData) {
-    const { nom, adresse, email, telephone, produits } = fournisseurData;
+    validateFournisseurId(id);
+    const validatedData = validateFournisseur(fournisseurData);
+    const { nom, adresse, email, telephone, produits } = validatedData;
+    
+    await checkProductsExists(produits);
+
     let connection;
     try {
         connection = await getConnection();
@@ -76,6 +89,7 @@ async function updateFournisseur(id, fournisseurData) {
 
         await connection.query('DELETE FROM Produit_Fournisseur WHERE id_fournisseur=?', [id]);
         for (const id_produit of produits) {
+            validateProduitId(id_produit);
             await connection.query(
                 'INSERT INTO Produit_Fournisseur (id_produit, id_fournisseur) VALUES (?, ?)',
                 [id_produit, id]
@@ -89,6 +103,7 @@ async function updateFournisseur(id, fournisseurData) {
 }
 
 async function deleteFournisseur(id) {
+    validateFournisseurId(id);
     let connection;
     try {
         connection = await getConnection();
