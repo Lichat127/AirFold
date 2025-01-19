@@ -7,6 +7,7 @@ const fournisseurRoutes = require("./src/routes/fournisseurRoutes");
 const clientRoutes = require("./src/routes/clientRoutes");
 const commandeRoutes = require("./src/routes/commandeRoutes");
 const ligneCommandeRoutes = require("./src/routes/ligneCommandeRoutes");
+const statsRoutes = require("./src/routes/statsRoutes");
 
 const app = express();
 const PORT = 3000;
@@ -23,6 +24,7 @@ app.use(bodyParser.json());
         app.use("/clients", clientRoutes)
         app.use("/commandes", commandeRoutes)
         app.use("/lignes-commandes", ligneCommandeRoutes)
+        app.use("/statistiques", statsRoutes)
     
         app.listen(PORT, () => {
             console.log(`Serveur lancé sur le port ${PORT}`);
