@@ -51,10 +51,10 @@ Ces failles exposaient l'application à des risques majeurs de compromission de 
 git clone https://github.com/airfold/api.git
 
 # Aller dans le dossier du projet
-cd airfold-api
+cd airfold
 
 # Installer les dépendances
-npm install
+npm install // ou pnpm i
 
 # Lancer l'application
 node app
