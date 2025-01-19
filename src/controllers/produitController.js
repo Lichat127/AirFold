@@ -20,10 +20,10 @@ async function getProductById(id) {
         }
         
         const [fournisseurs] = await connection.query(`SELECT id_fournisseur FROM Produit_Fournisseur WHERE id_produit = ${id}`);
-        rows[0].fournisseurs = fournisseurs.map(f => f.id_fournisseur);
+        rows.fournisseurs = fournisseurs.map(f => f.id_fournisseur);
         
         await connection.end();
-        return rows[0];
+        return rows;
     } catch (error) {
         throw new Error("Erreur lors de la récupération du produit.");
     }

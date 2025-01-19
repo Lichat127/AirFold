@@ -21,10 +21,10 @@ async function getFournisseurById(id) {
         }
         
          const [produits] = await connection.query(`SELECT id_produit FROM Produit_Fournisseur WHERE id_fournisseur = ${id}`);
-         rows[0].produits = produits.map(p => p.id_produit);
+         rows.produits = produits.map(p => p.id_produit);
          
          await connection.end();
-         return rows[0];
+         return rows;
      } catch (error) {
          throw new Error("Erreur lors de la récupération du fournisseur.");
      }

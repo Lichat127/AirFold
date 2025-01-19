@@ -48,4 +48,13 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
+router.get("/:id/produits", async (req, res) => {
+    try {
+        const produits = await categorieController.getProductsByCategoryId(req.params.id);
+        res.json(produits);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;

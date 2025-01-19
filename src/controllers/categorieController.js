@@ -67,10 +67,23 @@ async function deleteCategory(id) {
     }
 }
 
+async function getProductsByCategoryId(categoryId) {
+    try {
+        const connection = await getConnection();
+        const [rows] = await connection.query(`SELECT * FROM Produit WHERE id_categorie = ${categoryId}`);
+        await connection.end();
+        return rows;
+    } catch (error) {
+        throw new Error("Erreur lors de la récupération des produits de la catégorie.");
+    }
+}
+
+
 module.exports = {
     getAllCategories,
     getCategoryById,
     createCategory,
     updateCategory,
     deleteCategory,
+    getProductsByCategoryId,
 };
