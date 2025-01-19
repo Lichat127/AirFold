@@ -1,5 +1,7 @@
 const { getConnection } = require("../config/db");
 const { validateCommande, validateCommandeId, validateClientId, validateDateRange } = require("../models/commandeModel");
+const { checkProductsExists } = require("../models/fournisseurModel");
+const { validateProduitId } = require("../models/produitModel");
 
 async function getAllCommandes() {
     let connection;
@@ -123,6 +125,27 @@ async function getCommandesByDateRange(startDate, endDate) {
     }
 }
 
+async function getCommandesByProduitId(produitId) {
+    validateProduitId(produitId);
+    await checkProductsExists(produitId);
+
+    let connection;
+    try {
+        connection = await getConnection();
+        const [rows] = await connection.query(`
+            SELECT DISTINCT c.* 
+            FROM Commande c
+            JOIN Ligne_commande lc ON c.id = lc.id_commande
+            WHERE lc.id_produit = ?
+        `, [produitId]);
+        return rows;
+    } catch (error) {
+        throw new Error(`Erreur lors de la récupération des commandes contenant le produit: ${error.message}`);
+    } finally {
+        if (connection) await connection.end();
+    }
+}
+
 module.exports = {
     getAllCommandes,
     getCommandeById,
@@ -131,4 +154,5 @@ module.exports = {
     deleteCommande,
     getCommandesByClientId,
     getCommandesByDateRange,
+    getCommandesByProduitId,
 };
