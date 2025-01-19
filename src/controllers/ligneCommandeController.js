@@ -3,7 +3,7 @@ const { getConnection } = require("../config/db");
 async function getAllLigneCommandes() {
     try {
         const connection = await getConnection();
-        const [rows] = await connection.query(`SELECT * FROM Ligne_commande`);
+        const [rows] = await connection.query('SELECT * FROM Ligne_commande');
         await connection.end();
         return rows;
     } catch (error) {
@@ -14,12 +14,12 @@ async function getAllLigneCommandes() {
 async function getLigneCommandeById(id) {
     try {
         const connection = await getConnection();
-        const [rows] = await connection.query(`SELECT * FROM Ligne_commande WHERE id = ${id}`);
+        const [rows] = await connection.query('SELECT * FROM Ligne_commande WHERE id = ?', [id]);
         if (rows.length === 0) {
             throw new Error("Ligne de commande introuvable.");
         }
         await connection.end();
-        return rows;
+        return rows[0];
     } catch (error) {
         throw new Error("Erreur lors de la récupération de la ligne de commande.");
     }
@@ -29,8 +29,10 @@ async function createLigneCommande(ligneCommandeData) {
     const { id_commande, id_produit, quantite, prix_unitaire_applique } = ligneCommandeData;
     try {
         const connection = await getConnection();
-        const query = `INSERT INTO Ligne_commande (id_commande, id_produit, quantite, prix_unitaire_applique) VALUES (${id_commande}, ${id_produit}, ${quantite}, ${prix_unitaire_applique})`;
-        const [result] = await connection.query(query);
+        const [result] = await connection.query(
+            'INSERT INTO Ligne_commande (id_commande, id_produit, quantite, prix_unitaire_applique) VALUES (?, ?, ?, ?)',
+            [id_commande, id_produit, quantite, prix_unitaire_applique]
+        );
         await connection.end();
         return result.insertId;
     } catch (error) {
@@ -42,8 +44,10 @@ async function updateLigneCommande(id, ligneCommandeData) {
     const { id_commande, id_produit, quantite, prix_unitaire_applique } = ligneCommandeData;
     try {
         const connection = await getConnection();
-        const query = `UPDATE Ligne_commande SET id_commande = ${id_commande}, id_produit = ${id_produit}, quantite = ${quantite}, prix_unitaire_applique = ${prix_unitaire_applique} WHERE id = ${id}`;
-        const [result] = await connection.query(query);
+        const [result] = await connection.query(
+            'UPDATE Ligne_commande SET id_commande = ?, id_produit = ?, quantite = ?, prix_unitaire_applique = ? WHERE id = ?',
+            [id_commande, id_produit, quantite, prix_unitaire_applique, id]
+        );
         if (result.affectedRows === 0) {
             throw new Error("Ligne de commande introuvable.");
         }
@@ -56,8 +60,7 @@ async function updateLigneCommande(id, ligneCommandeData) {
 async function deleteLigneCommande(id) {
     try {
         const connection = await getConnection();
-        const query = `DELETE FROM Ligne_commande WHERE id = ${id}`;
-        const [result] = await connection.query(query);
+        const [result] = await connection.query('DELETE FROM Ligne_commande WHERE id = ?', [id]);
         if (result.affectedRows === 0) {
             throw new Error("Ligne de commande introuvable.");
         }
@@ -70,14 +73,13 @@ async function deleteLigneCommande(id) {
 async function getLignesByCommandeId(commandeId) {
     try {
         const connection = await getConnection();
-        const [rows] = await connection.query(`SELECT * FROM Ligne_commande WHERE id_commande = ${commandeId}`);
+        const [rows] = await connection.query('SELECT * FROM Ligne_commande WHERE id_commande = ?', [commandeId]);
         await connection.end();
         return rows;
     } catch (error) {
         throw new Error("Erreur lors de la récupération des lignes de la commande.");
     }
 }
-
 
 module.exports = {
     getAllLigneCommandes,
