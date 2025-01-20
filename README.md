@@ -6,6 +6,7 @@
 3. Audit de Sécurité
 4. Fonctionnalités V2
 5. Installation
+6. Tester
 
 ## Introduction 🌐
 AirFold est une solution de gestion complète pour les passionnés de maquettes aéronautiques. Cette API permet de gérer efficacement un catalogue de maquettes, les commandes, les clients et les fournisseurs.
@@ -59,3 +60,16 @@ npm install // ou pnpm i
 # Lancer l'application
 node app
 ```
+
+## Test Manuel d'API avec Bruno 🧪
+Bruno est un outil open-source puissant pour tester manuellement les API. 
+
+Voici comment l'utiliser avec AirFold :
+1. Installation de Bruno
+- Téléchargez Bruno depuis le [site officiel](https://www.usebruno.com/).
+- Installez-le sur votre système (disponible pour Windows, macOS et Linux).
+
+2. Utilisation avec AirFold
+- Lancez Bruno et créez une nouvelle collection pour AirFold.
+- Importez les collections Bruno fournies dans le dossier collection-api/AirFold.
+- Vous pouvez ensuite tester les différents Endpoint et visualiser des exemples de requêtes.
