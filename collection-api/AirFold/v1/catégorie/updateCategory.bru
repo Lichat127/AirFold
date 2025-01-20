@@ -1,0 +1,18 @@
+meta {
+  name: updateCategory
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:3000/categories/76
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nom": "Avions de Modification",
+    "description": "Test de modification de description pour la nouvelle catégorie"
+  }
+}

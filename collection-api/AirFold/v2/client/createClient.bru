@@ -1,0 +1,21 @@
+meta {
+  name: createClient
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3000/clients
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nom": "Peralta",
+    "prenom": "Jake",
+    "adresse": "100 rue du Charmes",
+    "email": "peralte.jake@bk99.com",
+    "telephone": "0612345678"
+  }
+}

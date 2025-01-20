@@ -1,0 +1,23 @@
+meta {
+  name: updateProduct
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:3000/produits/139
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "reference": "SA0000",
+    "nom": "Super Modification",
+    "description": "Maquette en papier représentant un avion super-héros.",
+    "prix_unitaire": "15.00",
+    "quantite_stock": 20,
+    "id_categorie": 15,
+    "fournisseurs": [12, 24]
+  }
+}

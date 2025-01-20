@@ -1,0 +1,21 @@
+meta {
+  name: updateFournisseur
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:3000/fournisseurs/148
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nom": "FournisseurModifié",
+    "adresse": "15 Rue de l’Industrie, Nantes",
+    "email": "contact@maquettespro.com",
+    "telephone": "0240567890",
+    "produits": []
+  }
+}

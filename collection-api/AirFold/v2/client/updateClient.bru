@@ -1,0 +1,21 @@
+meta {
+  name: updateClient
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:3000/clients/79
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nom": "Peralta",
+    "prenom": "Amy",
+    "adresse": "100 rue du Charmes",
+    "email": "peralte.amy@bk99.com",
+    "telephone": "0612345678"
+  }
+}

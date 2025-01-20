@@ -1,0 +1,16 @@
+meta {
+  name: GetSales2
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:3000/statistiques/ventes?start=2025-01-01&end=2025-01-10
+  body: none
+  auth: none
+}
+
+params:query {
+  start: 2025-01-01
+  end: 2025-01-10
+}

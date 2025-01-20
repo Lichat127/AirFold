@@ -1,0 +1,17 @@
+meta {
+  name: GetTopSells2
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:3000/statistiques/top-vendus?limit=5&start=2024-12-24&end=2025-01-10
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 5
+  start: 2024-12-24
+  end: 2025-01-10
+}

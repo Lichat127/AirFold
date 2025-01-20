@@ -1,0 +1,23 @@
+meta {
+  name: createProduct
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3000/produits
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "reference": "SA0000",
+    "nom": "Super Avion",
+    "description": "Maquette en papier représentant un avion super-héros.",
+    "prix_unitaire": "15.00",
+    "quantite_stock": 20,
+    "id_categorie": 15,
+    "fournisseurs": [12, 24]
+  }
+}

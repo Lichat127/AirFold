@@ -1,0 +1,18 @@
+meta {
+  name: createCommande
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3000/commandes
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id_client": 24,
+    "date_commande": "2025-01-20"
+   }
+}

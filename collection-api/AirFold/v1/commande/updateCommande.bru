@@ -1,0 +1,18 @@
+meta {
+  name: updateCommande
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:3000/commandes/151
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id_client": 25,
+    "date_commande": "2025-01-20"
+   }
+}

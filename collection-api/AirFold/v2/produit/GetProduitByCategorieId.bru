@@ -1,0 +1,15 @@
+meta {
+  name: GetProduitByCategorieId
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:3000/produits?categories=1,2,3
+  body: none
+  auth: none
+}
+
+params:query {
+  categories: 1,2,3
+}

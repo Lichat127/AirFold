@@ -41,7 +41,7 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => { 
   try { 
-      await fournisseurController.deleteFurniseur(req.params.id); 
+      await fournisseurController.deleteFourniseur(req.params.id); 
       res.json({ message: "Founisseu supprimé avec succès." }); 
   } catch(error){ 
       res.status(404).json({ error: error.message });  
